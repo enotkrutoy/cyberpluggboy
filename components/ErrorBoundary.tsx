@@ -1,5 +1,5 @@
 // Fix: Ensure proper React class component imports for stable inheritance.
-import React, { ErrorInfo, ReactNode } from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children?: ReactNode;
@@ -13,8 +13,8 @@ interface State {
 /**
  * Standard ErrorBoundary to catch and display rendering errors.
  */
-// Fix: Explicitly extending React.Component<Props, State> ensures 'this.props' is correctly typed.
-export default class ErrorBoundary extends React.Component<Props, State> {
+// Fix: Explicitly extending Component<Props, State> ensures 'this.props' is correctly typed.
+export default class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null
@@ -51,7 +51,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
       );
     }
 
-    // Fix: Accessing 'this.props.children' correctly via class inheritance.
+    // Fix: Accessing 'this.props.children' from the extended Component class.
     return this.props.children;
   }
 }
