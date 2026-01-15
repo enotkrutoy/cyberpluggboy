@@ -13,6 +13,12 @@ const STYLE_PRESETS = [
   { id: 'luxury', label: 'Dark Luxury', prompt: 'Matte black surface with dramatic low-key rim lighting.' }
 ];
 
+const ANGLES_CONFIG = [
+  { id: '1', label: 'Frontal Master', prompt: 'Perfect eye-level frontal shot, crisp product details.' },
+  { id: '2', label: 'Hero Perspective', prompt: 'Dynamic 3/4 view from a slightly high smartphone-held angle.' },
+  { id: '3', label: 'Top/Side View', prompt: 'Modern side profile or flat-lay view depending on product form.' }
+];
+
 const App: React.FC = () => {
   const [sourceImage, setSourceImage] = useState<string | null>(null);
   const [userPrompt, setUserPrompt] = useState<string>('');
@@ -111,22 +117,15 @@ const App: React.FC = () => {
     setResults(existingResults);
     setError(null);
     
-    const angles = [
-      { id: '1', label: 'Frontal Master', prompt: 'Perfect eye-level frontal shot, crisp product details.' },
-      { id: '2', label: 'Hero Perspective', prompt: 'Dynamic 3/4 view from a slightly high smartphone-held angle.' },
-      { id: '3', label: 'Top/Side View', prompt: 'Modern side profile or flat-lay view depending on product form.' }
-    ];
-
     const currentResults = [...existingResults];
 
     try {
-      for (let i = startIndex; i < angles.length; i++) {
-        const angle = angles[i];
-        setLoadingProgress(Math.floor(((i + 1) / angles.length) * 100));
+      for (let i = startIndex; i < ANGLES_CONFIG.length; i++) {
+        const angle = ANGLES_CONFIG[i];
+        setLoadingProgress(Math.floor(((i + 1) / ANGLES_CONFIG.length) * 100));
         setLoadingTask(`Generating ${angle.label}...`);
         
-        // Anti-rate limit delay
-        if (i > startIndex) await new Promise(res => setTimeout(res, 3000));
+        if (i > startIndex) await new Promise(res => setTimeout(res, 2000));
 
         const resultUrl = await generateProductAngle(sourceImage, angle.prompt, userPrompt);
         
@@ -178,10 +177,6 @@ const App: React.FC = () => {
             <div className="absolute bottom-0 right-1/4 w-[60%] h-[60%] bg-blue-500/10 blur-[200px] rounded-full"></div>
           </div>
 
-          {status === GenerationState.LOADING && (
-            <LoadingOverlay progress={loadingProgress} currentTask={loadingTask} />
-          )}
-
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             {/* Input Column */}
             <div className="lg:col-span-5 space-y-6">
@@ -202,9 +197,6 @@ const App: React.FC = () => {
                       <div className="aspect-[3/4] rounded-[2rem] overflow-hidden bg-black relative shadow-inner border border-white/5">
                         <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
                         <div className="camera-guide"></div>
-                        <div className="absolute inset-0 flex items-end justify-center pb-12">
-                          <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em] bg-black/40 px-3 py-1 rounded-full backdrop-blur-md">Place product inside dashed area</p>
-                        </div>
                         <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-4 px-6">
                           <button onClick={stopCamera} className="w-12 h-12 rounded-full bg-slate-800/80 backdrop-blur-md flex items-center justify-center text-white"><i className="fa-solid fa-xmark"></i></button>
                           <button onClick={capturePhoto} className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-black shadow-xl active:scale-90 transition-transform"><div className="w-12 h-12 rounded-full border-2 border-black"></div></button>
@@ -234,7 +226,6 @@ const App: React.FC = () => {
                                 <span className="text-[9px] font-black uppercase tracking-widest">File</span>
                               </button>
                             </div>
-                            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Upload original image</p>
                           </>
                         )}
                         <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
@@ -243,10 +234,7 @@ const App: React.FC = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-2 flex justify-between">
-                      <span>Atmosphere Preset</span>
-                      <span className="text-indigo-400">Pro Styles</span>
-                    </label>
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-2">Atmosphere Preset</label>
                     <div className="flex flex-wrap gap-2 mb-2">
                       {STYLE_PRESETS.map(preset => (
                         <button
@@ -263,9 +251,7 @@ const App: React.FC = () => {
                   {error && (
                     <div className={`p-4 rounded-2xl border flex items-start gap-3 animate-in fade-in slide-in-from-top-2 ${cooldown ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}>
                       <i className={`fa-solid ${cooldown ? 'fa-clock animate-pulse' : 'fa-circle-exclamation'} mt-0.5`}></i>
-                      <div className="text-xs font-bold">
-                        <p>{error}</p>
-                      </div>
+                      <div className="text-xs font-bold"><p>{error}</p></div>
                     </div>
                   )}
 
@@ -274,11 +260,7 @@ const App: React.FC = () => {
                     disabled={!sourceImage || status === GenerationState.LOADING || !!cooldown}
                     className="w-full py-5 rounded-[1.5rem] bg-indigo-600 hover:bg-indigo-500 disabled:opacity-20 text-white font-black uppercase tracking-[0.2em] text-xs transition-all active:scale-[0.97] shadow-xl shadow-indigo-600/30"
                   >
-                    {status === GenerationState.LOADING ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <i className="fa-solid fa-circle-notch animate-spin"></i> Engine Active
-                      </span>
-                    ) : results.length > 0 && results.length < 3 ? 'Resume Generation' : 'Start Studio Session'}
+                    {status === GenerationState.LOADING ? 'Generating Sequence...' : results.length > 0 && results.length < 3 ? 'Resume Generation' : 'Start Studio Session'}
                   </button>
                 </div>
               </div>
@@ -298,63 +280,59 @@ const App: React.FC = () => {
                 )}
               </div>
 
-              {results.length === 0 ? (
-                <div className="min-h-[500px] glass rounded-[3rem] border-2 border-dashed border-white/5 flex flex-col items-center justify-center p-12 text-center">
-                  <div className="w-20 h-20 rounded-[2rem] bg-slate-900 flex items-center justify-center mb-6 shadow-inner">
-                    <i className="fa-solid fa-wand-magic-sparkles text-3xl text-slate-700"></i>
-                  </div>
-                  <h3 className="text-lg font-black text-slate-400 uppercase tracking-tight italic mb-2">Waiting for Asset</h3>
-                  <p className="text-slate-600 text-[11px] font-bold uppercase tracking-widest max-w-[200px] leading-relaxed">
-                    Captured photos will appear here in high definition.
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-12 pb-20">
-                  {results.map((img, idx) => (
+              <div className="grid grid-cols-1 gap-12 pb-20">
+                {ANGLES_CONFIG.map((config, idx) => {
+                  const img = results.find(r => r.id === config.id);
+                  const isGenerating = status === GenerationState.LOADING && results.length === idx;
+                  
+                  return (
                     <div 
-                      key={img.id} 
-                      className="glass rounded-[3rem] overflow-hidden border border-white/10 group shadow-2xl stagger-item"
-                      style={{ animationDelay: `${idx * 0.15}s` }}
+                      key={config.id} 
+                      className={`glass rounded-[3rem] overflow-hidden border border-white/10 group shadow-2xl transition-all duration-500 ${!img && !isGenerating ? 'opacity-30' : 'opacity-100'}`}
                     >
                       <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
                         <div className="flex items-center gap-4">
                           <span className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-black text-[10px]">0{idx + 1}</span>
-                          <span className="text-xs font-black text-white uppercase tracking-[0.2em] italic">{img.angle}</span>
+                          <span className="text-xs font-black text-white uppercase tracking-[0.2em] italic">{config.label}</span>
                         </div>
-                        <div className="flex gap-4">
-                          <button onClick={() => window.open(img.url)} className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-all">
-                            <i className="fa-solid fa-expand"></i>
-                          </button>
-                          <a href={img.url} download={`${img.angle}.jpg`} className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white hover:bg-indigo-500 shadow-lg transition-all">
-                            <i className="fa-solid fa-download"></i>
-                          </a>
-                        </div>
+                        {img && (
+                          <div className="flex gap-4">
+                            <a href={img.url} download={`${config.label}.jpg`} className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white hover:bg-indigo-500 shadow-lg transition-all">
+                              <i className="fa-solid fa-download"></i>
+                            </a>
+                          </div>
+                        )}
                       </div>
                       <div className="aspect-[3/4] bg-slate-950 flex items-center justify-center overflow-hidden relative">
-                        <img 
-                          src={img.url} 
-                          alt={img.angle} 
-                          className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-1000"
-                        />
-                        <div className="absolute inset-0 shimmer opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500"></div>
+                        {img ? (
+                          <img 
+                            src={img.url} 
+                            alt={config.label} 
+                            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-1000"
+                          />
+                        ) : isGenerating ? (
+                          <div className="flex flex-col items-center gap-4">
+                            <i className="fa-solid fa-circle-notch animate-spin text-indigo-500 text-3xl"></i>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 animate-pulse">Rendering...</span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center gap-4 opacity-20">
+                            <i className="fa-solid fa-image text-4xl text-slate-600"></i>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Awaiting...</span>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  ))}
-                  
-                  {results.length < 3 && status !== GenerationState.LOADING && !cooldown && (
-                    <button 
-                      onClick={() => handleGenerate(results.length, results)}
-                      className="aspect-[3/4] glass rounded-[3rem] border-2 border-dashed border-white/5 flex flex-col items-center justify-center gap-4 hover:border-indigo-500/30 transition-all group"
-                    >
-                      <i className="fa-solid fa-plus text-slate-600 text-3xl group-hover:text-indigo-400 transition-colors"></i>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Complete Sequence</span>
-                    </button>
-                  )}
-                </div>
-              )}
+                  );
+                })}
+              </div>
             </div>
           </div>
         </main>
+        
+        {status === GenerationState.LOADING && (
+          <LoadingOverlay progress={loadingProgress} currentTask={loadingTask} />
+        )}
         
         <canvas ref={canvasRef} className="hidden" />
       </div>
