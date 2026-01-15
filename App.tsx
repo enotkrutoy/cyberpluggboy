@@ -28,6 +28,13 @@ const App: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // Check if API Key is missing on mount (for Vercel debugging)
+  useEffect(() => {
+    if (!process.env.API_KEY) {
+      setError("API_KEY is missing. Please add it to your Vercel Environment Variables and Redeploy.");
+    }
+  }, []);
+
   // Handle countdown for rate limits
   useEffect(() => {
     let timer: any;
@@ -97,6 +104,10 @@ const App: React.FC = () => {
 
   const handleGenerate = async (startIndex = 0, existingResults: ProductImage[] = []) => {
     if (!sourceImage) return;
+    if (!process.env.API_KEY) {
+      setError("API Key missing. Configuration error.");
+      return;
+    }
 
     setStatus(GenerationState.LOADING);
     setResults(existingResults);

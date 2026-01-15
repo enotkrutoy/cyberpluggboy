@@ -1,6 +1,6 @@
 
-// Fix: Explicitly import Component and use a constructor to resolve TypeScript inheritance issues where base properties like 'props' were not recognized.
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+// Fix: Use React.Component explicitly to ensure TypeScript correctly identifies the base class and provides 'props' and 'state' properties on the instance.
+import React, { ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children?: ReactNode;
@@ -14,8 +14,8 @@ interface State {
 /**
  * ErrorBoundary component to catch rendering errors in the component tree.
  */
-export default class ErrorBoundary extends Component<Props, State> {
-  // Fix: State initialization remains compatible with class property syntax, but constructor ensures 'props' is correctly bound.
+export default class ErrorBoundary extends React.Component<Props, State> {
+  // State initialization remains compatible with class property syntax.
   public state: State = {
     hasError: false,
     error: null
@@ -36,7 +36,7 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 
   public render() {
-    // Fix: Accessing this.state and this.props now correctly resolves through explicit Component inheritance.
+    // Accessing this.state and this.props now correctly resolves through explicit React.Component inheritance.
     if (this.state.hasError) {
       // You can render any custom fallback UI
       return (

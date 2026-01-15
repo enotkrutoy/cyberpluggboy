@@ -1,22 +1,22 @@
-// @google/genai: Load environment variables and define process.env.API_KEY for the client bundle.
+
+// Fix: Import process from 'node:process' to ensure the Node.js environment types are correctly used for process.cwd(), resolving conflicts with browser-side Process types.
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { fileURLToPath } from 'node:url';
 import process from 'node:process';
 
-// Fix: Define __dirname for ES modules which is missing by default.
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(({ mode }) => {
-  // Fix: Use imported process to ensure 'cwd' property is correctly recognized by TypeScript.
+  // Load env file based on `mode` in the current working directory.
+  // Set the third parameter to '' to load all envs regardless of the `VITE_` prefix.
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
     plugins: [react()],
-    // Define environment variables that need to be accessible in the client-side code.
     define: {
-      'process.env.API_KEY': JSON.stringify(env.API_KEY),
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || ''),
     },
     build: {
       outDir: 'dist',
@@ -24,7 +24,6 @@ export default defineConfig(({ mode }) => {
       sourcemap: false,
       rollupOptions: {
         output: {
-          // Optimization: Separate core vendor libraries into distinct chunks for better Vercel edge caching.
           manualChunks: {
             'react-vendor': ['react', 'react-dom'],
             'ai-vendor': ['@google/genai'],
