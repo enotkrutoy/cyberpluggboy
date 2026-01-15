@@ -1,0 +1,7 @@
+{
+  "name": "Marketplace Pro Photographer",
+  "description": "Generate professional, smartphone-quality marketplace product photos from a single source image using Gemini 2.5 Flash Image. Create authentic frontal, 3/4, and top/side views instantly.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
