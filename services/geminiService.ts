@@ -1,4 +1,3 @@
-// @google/genai guidelines: Create the GoogleGenAI instance inside the function using process.env.API_KEY.
 import { GoogleGenAI } from "@google/genai";
 
 export class RateLimitError extends Error {
@@ -29,18 +28,19 @@ export const generateProductAngle = async (
     const imageData = parts[1];
 
     const combinedPrompt = `
-      ROLE: Master Mobile Product Photographer for Marketplace Listings.
-      TASK: Re-photograph the product from the source image at a NEW angle.
+      ROLE: World-class Product Photographer for Marketplaces (Amazon, Ozon, Wildberries).
+      TASK: Create an AUTHENTIC photo of the product from the source image at a NEW angle.
       NEW ANGLE: ${anglePrompt}
-      ENVIRONMENT & VIBE: ${userStylePrompt || "A high-end, clean minimalist studio with soft natural light."}
+      ENVIRONMENT: ${userStylePrompt || "A realistic, high-quality domestic or commercial interior context. No plain white void."}
       
-      MOBILE PHOTOGRAPHY SPECS:
-      - OPTICS: Simulate an f/1.8 smartphone primary lens (approx 24mm-35mm equivalent).
-      - PROCESSING: Use "Computational Photography" style: subtle HDR, smart exposure, and natural texture sharpening.
-      - BOKEH: Gentle, natural background blur as seen in high-end mobile "Portrait Mode".
-      - FIDELITY: Maintain 100% accurate shape, color, branding, and materials of the source product. No additions or deletions to the product itself.
-      - LIGHTING: Soft wrap-around natural light. Authentic contact shadows on the surface.
-      - AESTHETIC: Look like an unedited, professionally shot photo from a flagship smartphone (e.g., iPhone 15 Pro, Pixel 8 Pro).
+      STRICT PHOTOGRAPHY STANDARDS:
+      - QUALITY: Must look like a high-end smartphone photo (iPhone 15 Pro quality). 
+      - COMPOSITION: The product must occupy 60-80% of the frame. Sharp focus throughout.
+      - AUTHENTICITY: Maintain 100% fidelity to the original product (shape, color, texture, labels). Do NOT add features.
+      - LIGHTING: Natural, even lighting. Avoid harsh studio shadows. Subtle, realistic contact shadows on the surface.
+      - NO COLLAGES: Generate exactly ONE single-view image. No split screens or contact sheets.
+      - NO AI ARTIFACTS: Ensure clean edges, perfect geometry, and realistic textures. Avoid "over-polished" or "dreamy" AI looks.
+      - RESOLUTION: High-detail, crisp textures as if shot with a 48MP mobile sensor.
     `;
 
     const response = await ai.models.generateContent({
@@ -58,7 +58,7 @@ export const generateProductAngle = async (
       },
       config: {
         imageConfig: {
-          aspectRatio: "3:4"
+          aspectRatio: "3:4" // Standard smartphone portrait aspect ratio for marketplaces
         }
       }
     });
@@ -81,7 +81,6 @@ export const generateProductAngle = async (
   } catch (error: any) {
     console.error("Gemini Service Error:", error);
     
-    // Check for 429 Rate Limit error
     if (error.message?.includes('429') || error.status === 429) {
       throw new RateLimitError("Rate Limit: The studio is busy. Please wait 10 seconds.");
     }

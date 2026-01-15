@@ -1,5 +1,3 @@
-
-// Fix: Import process from 'node:process' to ensure the Node.js environment types are correctly used for process.cwd(), resolving conflicts with browser-side Process types.
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -9,8 +7,6 @@ import process from 'node:process';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(({ mode }) => {
-  // Load env file based on `mode` in the current working directory.
-  // Set the third parameter to '' to load all envs regardless of the `VITE_` prefix.
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
