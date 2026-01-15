@@ -13,16 +13,15 @@ interface State {
 /**
  * ErrorBoundary component to catch rendering errors in the component tree.
  */
+// Explicitly extending React.Component with Props and State generics ensures this.props is correctly typed.
 export default class ErrorBoundary extends Component<Props, State> {
-  // Use property initializer for state to ensure it is correctly recognized.
-  public state: State = {
-    hasError: false,
-    error: null
-  };
-
-  // Add constructor to ensure props are correctly initialized in the base class and recognized by TypeScript
+  // Consolidate state initialization in the constructor to ensure it's handled during instantiation.
   constructor(props: Props) {
     super(props);
+    this.state = {
+      hasError: false,
+      error: null
+    };
   }
 
   public static getDerivedStateFromError(error: Error): State {
@@ -54,7 +53,7 @@ export default class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    // Access the children property from the inherited props.
+    // return the children from this.props, which is inherited from Component<Props, State>.
     return this.props.children;
   }
 }
