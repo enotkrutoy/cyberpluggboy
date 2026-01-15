@@ -1,4 +1,5 @@
 
+// Fix: Explicitly import Component and use a constructor to resolve TypeScript inheritance issues where base properties like 'props' were not recognized.
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
@@ -13,27 +14,31 @@ interface State {
 /**
  * ErrorBoundary component to catch rendering errors in the component tree.
  */
-// Explicitly extending React.Component with Props and State generics ensures this.props is correctly typed.
 export default class ErrorBoundary extends Component<Props, State> {
-  // Consolidate state initialization in the constructor to ensure it's handled during instantiation.
+  // Fix: State initialization remains compatible with class property syntax, but constructor ensures 'props' is correctly bound.
+  public state: State = {
+    hasError: false,
+    error: null
+  };
+
   constructor(props: Props) {
     super(props);
-    this.state = {
-      hasError: false,
-      error: null
-    };
   }
 
   public static getDerivedStateFromError(error: Error): State {
+    // Update state so the next render will show the fallback UI.
     return { hasError: true, error };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // You can also log the error to an error reporting service
     console.error('Uncaught error:', error, errorInfo);
   }
 
   public render() {
+    // Fix: Accessing this.state and this.props now correctly resolves through explicit Component inheritance.
     if (this.state.hasError) {
+      // You can render any custom fallback UI
       return (
         <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6 text-center">
           <div className="glass p-8 rounded-[2rem] border border-red-500/20 max-w-md">
@@ -53,7 +58,6 @@ export default class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    // return the children from this.props, which is inherited from Component<Props, State>.
     return this.props.children;
   }
 }
