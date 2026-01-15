@@ -28,11 +28,6 @@
       .safe-pt {
         padding-top: var(--safe-area-inset-top);
       }
-      .transition-all {
-        transition-property: all;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 300ms;
-      }
       .glass {
         background: rgba(15, 23, 42, 0.6);
         backdrop-filter: blur(12px);
@@ -43,17 +38,18 @@
   <script type="importmap">
 {
   "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
     "@google/genai": "https://esm.sh/@google/genai@^1.36.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
 }
 </script>
 </head>
   <body class="selection:bg-indigo-500/30 overflow-x-hidden">
     <div id="root"></div>
-    <!-- Explicitly import the index.tsx file as a module -->
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>

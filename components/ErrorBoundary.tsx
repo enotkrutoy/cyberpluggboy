@@ -2,7 +2,7 @@
 import React, { ErrorInfo, ReactNode } from 'react';
 
 interface Props {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 interface State {
@@ -11,18 +11,15 @@ interface State {
 }
 
 /**
- * Fix: Explicitly extend React.Component and provide a constructor.
- * In some TypeScript environments, this ensures the 'props' property is correctly 
- * inherited and typed from the base Component class.
+ * ErrorBoundary component to catch rendering errors in the component tree.
+ * Fix: Explicitly extend React.Component to ensure the 'props' property is correctly inherited and recognized by TypeScript.
  */
 export default class ErrorBoundary extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      hasError: false,
-      error: null
-    };
-  }
+  // Use property initializer for state to ensure it is correctly recognized.
+  public state: State = {
+    hasError: false,
+    error: null
+  };
 
   public static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
@@ -53,7 +50,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
       );
     }
 
-    // Fix: Access children via this.props.children (inherited from React.Component)
+    // Access the children property from the inherited props.
     return this.props.children;
   }
 }
