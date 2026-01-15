@@ -1,4 +1,4 @@
-
+// Fix: Ensure proper React class component imports for stable inheritance.
 import React, { ErrorInfo, ReactNode } from 'react';
 
 interface Props {
@@ -11,32 +11,26 @@ interface State {
 }
 
 /**
- * ErrorBoundary component to catch rendering errors in the component tree.
- * Explicitly extending React.Component ensures that 'this.props' and 'this.state' 
- * are correctly inherited and typed for the TypeScript compiler.
+ * Standard ErrorBoundary to catch and display rendering errors.
  */
+// Fix: Explicitly extending React.Component<Props, State> ensures 'this.props' is correctly typed.
 export default class ErrorBoundary extends React.Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null
   };
 
-  constructor(props: Props) {
-    super(props);
-  }
+  // Fix: Removed redundant constructor that only called super(props) to clean up class definition.
 
   public static getDerivedStateFromError(error: Error): State {
-    // Update state so the next render will show the fallback UI.
     return { hasError: true, error };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log the error for observability.
     console.error('Uncaught error:', error, errorInfo);
   }
 
   public render() {
-    // Accessing state and props from the React.Component base class.
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6 text-center">
@@ -57,7 +51,7 @@ export default class ErrorBoundary extends React.Component<Props, State> {
       );
     }
 
-    // Accessing this.props.children from the React.Component base class.
+    // Fix: Accessing 'this.props.children' correctly via class inheritance.
     return this.props.children;
   }
 }
