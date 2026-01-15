@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from "@google/genai";
 
 export class RateLimitError extends Error {
@@ -13,12 +14,13 @@ export const generateProductAngle = async (
   userStylePrompt: string
 ): Promise<string | null> => {
   try {
-    const apiKey = process.env.API_KEY;
-    if (!apiKey) {
+    // The API key must be obtained exclusively from the environment variable process.env.API_KEY.
+    if (!process.env.API_KEY) {
       throw new Error("Google AI API Key is missing.");
     }
 
-    const ai = new GoogleGenAI({ apiKey });
+    // Always use const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const parts = base64Image.split(',');
     if (parts.length < 2) throw new Error("Invalid image format.");
@@ -43,6 +45,7 @@ export const generateProductAngle = async (
       - OUTPUT: Single photo only. No collages, no watermarks, no split views.
     `;
 
+    // Generate content using gemini-2.5-flash-image for general image tasks.
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: {
@@ -70,6 +73,7 @@ export const generateProductAngle = async (
     }
 
     if (candidate?.content?.parts) {
+      // Find the image part by iterating through all response parts as per guidelines.
       for (const part of candidate.content.parts) {
         if (part.inlineData) {
           return `data:image/png;base64,${part.inlineData.data}`;
