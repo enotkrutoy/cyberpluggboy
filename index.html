@@ -28,13 +28,11 @@
       .safe-pt {
         padding-top: var(--safe-area-inset-top);
       }
-      /* Smooth transitions for interactive elements */
       .transition-all {
         transition-property: all;
         transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
         transition-duration: 300ms;
       }
-      /* Glassmorphism utility */
       .glass {
         background: rgba(15, 23, 42, 0.6);
         backdrop-filter: blur(12px);
@@ -55,5 +53,7 @@
 </head>
   <body class="selection:bg-indigo-500/30 overflow-x-hidden">
     <div id="root"></div>
+    <!-- Explicitly import the index.tsx file as a module -->
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
