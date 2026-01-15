@@ -28,19 +28,19 @@ export const generateProductAngle = async (
     const imageData = parts[1];
 
     const combinedPrompt = `
-      ROLE: World-class Product Photographer for Marketplaces (Amazon, Ozon, Wildberries).
-      TASK: Create an AUTHENTIC photo of the product from the source image at a NEW angle.
+      ROLE: World-class Product Photographer for Elite Marketplaces.
+      TASK: Generate a high-fidelity, professional photo of the EXACT product from the source image.
       NEW ANGLE: ${anglePrompt}
-      ENVIRONMENT: ${userStylePrompt || "A realistic, high-quality domestic or commercial interior context. No plain white void."}
+      ENVIRONMENT: ${userStylePrompt || "A realistic, high-quality domestic or commercial interior context."}
       
       STRICT PHOTOGRAPHY STANDARDS:
-      - QUALITY: Must look like a high-end smartphone photo (iPhone 15 Pro quality). 
-      - COMPOSITION: The product must occupy 60-80% of the frame. Sharp focus throughout.
-      - AUTHENTICITY: Maintain 100% fidelity to the original product (shape, color, texture, labels). Do NOT add features.
-      - LIGHTING: Natural, even lighting. Avoid harsh studio shadows. Subtle, realistic contact shadows on the surface.
-      - NO COLLAGES: Generate exactly ONE single-view image. No split screens or contact sheets.
-      - NO AI ARTIFACTS: Ensure clean edges, perfect geometry, and realistic textures. Avoid "over-polished" or "dreamy" AI looks.
-      - RESOLUTION: High-detail, crisp textures as if shot with a 48MP mobile sensor.
+      - QUALITY: High-end mobile photography (iPhone 15 Pro, HDR, f/1.8). 
+      - COMPOSITION: Product MUST occupy 60-80% of the frame. Vertical 3:4 aspect ratio.
+      - FIDELITY: 100% accurate shape, color, and labels. Do NOT hallucinate new features.
+      - TEXT/LOGOS: Maintain all text, branding, and small details exactly as seen in source. 
+      - LIGHTING: Soft natural daylight with subtle global illumination. No harsh artificial shadows.
+      - FINISH: Crisp, sharp textures with realistic micro-imperfections. No "AI smooth" effect.
+      - OUTPUT: Single photo only. No collages, no watermarks, no split views.
     `;
 
     const response = await ai.models.generateContent({
@@ -58,7 +58,7 @@ export const generateProductAngle = async (
       },
       config: {
         imageConfig: {
-          aspectRatio: "3:4" // Standard smartphone portrait aspect ratio for marketplaces
+          aspectRatio: "3:4" 
         }
       }
     });
@@ -66,7 +66,7 @@ export const generateProductAngle = async (
     const candidate = response.candidates?.[0];
     
     if (candidate?.finishReason === 'SAFETY') {
-      throw new Error("Content blocked for safety. Please check your source image.");
+      throw new Error("Content blocked for safety. Use a clear product image.");
     }
 
     if (candidate?.content?.parts) {
@@ -77,12 +77,12 @@ export const generateProductAngle = async (
       }
     }
 
-    throw new Error("Failed to extract image result.");
+    throw new Error("Engine returned no visual data.");
   } catch (error: any) {
-    console.error("Gemini Service Error:", error);
+    console.error("Gemini Engine Failure:", error);
     
     if (error.message?.includes('429') || error.status === 429) {
-      throw new RateLimitError("Rate Limit: The studio is busy. Please wait 10 seconds.");
+      throw new RateLimitError("Rate Limit exceeded.");
     }
     
     throw error;
